@@ -1,0 +1,44 @@
+const readline = require('readline');
+
+// Функція для створення алфавіту
+function generateAlphabet() {
+    const lowerCase = Array.from({ length: 26 }, (_, i) => String.fromCharCode(97 + i)); // a-z
+    const upperCase = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)); // A-Z
+    return [...lowerCase, ...upperCase];
+}
+
+// Генерація алфавіту
+const alphabet = generateAlphabet();
+
+// Функція для шифрування тексту
+function caesarCipher(text, shift, decrypt = false) {
+    const adjustedShift = decrypt ? -shift : shift; // Вибір напряму зсуву
+    return text.split('').map(char => {
+        const index = alphabet.indexOf(char);
+        if (index === -1) return char; // Не входить в алфавіт
+        let newIndex = (index + adjustedShift) % alphabet.length;
+        if (newIndex < 0) newIndex += alphabet.length; // Для від'ємних індексів
+        return alphabet[newIndex];
+    }).join('');
+}
+
+// Налаштування для консолі
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+// Запит тексту для шифрування
+rl.question('Введіть текст для шифрування: ', (text) => {
+    rl.question('Введіть зсув: ', (shift) => {
+        const shiftValue = Number(shift) || 0; // Перетворення в число, за замовчуванням 0
+
+        const encrypted = caesarCipher(text, shiftValue); // Шифрування
+        console.log('Зашифрований текст:', encrypted);
+
+        const decrypted = caesarCipher(encrypted, shiftValue, true); // Дешифрування
+        console.log('Розшифрований текст:', decrypted);
+
+        rl.close();
+    });
+});
